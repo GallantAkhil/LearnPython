@@ -4,6 +4,16 @@
 
 ---
 
+## 🗺️ Learning Roadmap
+
+The complete structured roadmap is available here:
+
+👉 [Python Complete Core Mastery Roadmap]([https://whimsical.com/python-complete-core-mastery-Km2CEGjjqL9ktV4pBPYSTj](https://whimsical.com/python-complete-core-mastery-Km2CEGjjqL9ktV4pBPYSTj))
+
+This repository implements that roadmap in structured lessons.
+
+---
+
 ## 🚀 About This Repository
 
 **LearnPython** is a deep, structured knowledge base designed to build real engineering mastery.
