@@ -28,12 +28,12 @@ The goal is simple:
 
 ## LearnPython/
 
-### ─ CorePython/ → Python Mastery (Language Internals)
-### ─ Concurrency/ → AsyncIO, Threads, Multiprocessing
-### ─ FastAPI/ → ASGI & Production Backend Engineering
-### ─ Performance/ → Profiling & Optimization
-### ─ DesignPatterns/ → Applied Architecture in Python
-### ─ SystemDesign/ → Backend Design using Python
+ - CorePython/ → Python Mastery (Language Internals)
+ - Concurrency/ → AsyncIO, Threads, Multiprocessing
+ - FastAPI/ → ASGI & Production Backend Engineering
+ - Performance/ → Profiling & Optimization
+ - DesignPatterns/ → Applied Architecture in Python
+ - SystemDesign/ → Backend Design using Python
 
 Each top-level folder represents a major domain.
 
