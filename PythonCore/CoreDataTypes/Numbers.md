@@ -148,8 +148,8 @@ C would return -2.
 - Big integers scale with digit count
 - Heavy integer loops are slow in pure Python
 - Each operation:
- -- Allocates memory
- -- Performs dynamic dispatch
- -- Updates refcount
+ - Allocates memory
+ - Performs dynamic dispatch
+ - Updates refcount
 Engineering implication:
 - For heavy numeric workloads → use NumPy or C extensions.
