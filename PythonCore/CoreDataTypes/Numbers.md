@@ -90,11 +90,12 @@ Sign is stored separately in ob_size.
 
 CPython dynamically switches multiplication algorithms:
 
-Size Range |	Algorithm
-Small	| Schoolbook O(n²)
-Medium	| Karatsuba O(n^1.585)
-Larger	| Toom-Cook
-Very Large	| FFT-based
+Size Range |	Algorithm |
+|------------|------------|
+Small	| Schoolbook O(n²) |
+Medium	| Karatsuba O(n^1.585) |
+Larger	| Toom-Cook |
+Very Large	| FFT-based |
 
 This makes Python surprisingly efficient for very large integers.
 
