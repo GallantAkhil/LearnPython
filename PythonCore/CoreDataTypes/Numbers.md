@@ -48,13 +48,13 @@ Unlike C:
 
 ## CPython Internal Implementation
 
-Defined in:
+### Defined in:
 ```bash
 Include/longobject.h
 Objects/longobject.c
 ```
 
-Internal Structure
+### Internal Structure
 ```c
 typedef struct {
     PyObject_VAR_HEAD
@@ -62,7 +62,65 @@ typedef struct {
 } PyLongObject;
 ```
 
-Where:
+### Where:
 - PyObject_VAR_HEAD → reference count + type pointer + size
 - ob_size → number of digits (signed)
 - ob_digit[] → array of digits
+
+## Internal Representation
+
+### On 64-bit CPython:
+
+```python
+Base = 2^30
+```
+Each digit = 30 bits (not 32).
+
+Why 30 bits?
+- Prevent overflow during internal multiplication
+- Leave headroom for carry operations
+
+### Number stored as:
+```ini
+value = Σ (ob_digit[i] * 2^(30*i))
+```
+Sign is stored separately in ob_size.
+
+## Algorithm Switching
+
+CPython dynamically switches multiplication algorithms:
+
+Size Range |	Algorithm
+Small	| Schoolbook O(n²)
+Medium	| Karatsuba O(n^1.585)
+Larger	| Toom-Cook
+Very Large	| FFT-based
+
+This makes Python surprisingly efficient for very large integers.
+
+## Small Integer Caching
+
+CPython preallocates integers:
+```python
+[-5, 256]
+```
+Example:
+```python
+a = 100
+b = 100
+a is b  # True
+```
+But:
+```python
+a = 1000
+b = 1000
+a is b  # Usually False
+```
+Why?
+- Small integers are interned at startup.
+- Others are heap-allocated.
+
+Runtime Behavior
+- Every arithmetic operation creates a new PyLongObject.
+- Integers are immutable.
+- Large integers allocate memory dynamically.
