@@ -348,3 +348,38 @@ Every number:
 
 Python does NOT use unboxed primitives.
 This is the core reason numeric loops are slow.
+
+# 9️⃣ Production Engineering Patterns
+## Use int for:
+- IDs
+- Counters
+- Cryptography
+- Bit operations
+
+## Use float for:
+- ML
+- Analytics
+- Scientific computing
+
+## Use Decimal for:
+- Currency
+- Financial applications
+
+## Avoid:
+- Mixing numeric systems
+- Fractions in performance paths
+- Equality comparison of floats
+
+# Why Python Numeric Code is Slow
+Every operation:
+- Allocates objects
+- Increments/decrements refcount
+- Performs dynamic type lookup
+- Uses C-level function dispatch
+Even:
+```python
+x = 1 + 2
+```
+Creates:
+- 2 PyLongObjects
+- 1 result PyLongObject
