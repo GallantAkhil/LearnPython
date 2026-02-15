@@ -260,3 +260,37 @@ Decimal("0.1")
 Use only for:
 - Finance
 - Monetary calculations
+
+
+# 5️⃣ fractions.Fraction
+## Conceptual Model
+Exact rational number:
+```python
+Fraction(1, 3)
+```
+
+Stored as:
+```c
+numerator (int)
+denominator (int)
+```
+Always reduced via GCD.
+
+## Internal Mechanics
+
+On creation:
+```c
+g = gcd(numerator, denominator)
+numerator //= g
+denominator //= g
+```
+GCD computation is expensive.
+
+## Performance
+- Very slow
+- Memory heavy
+- Not suitable for high-performance systems
+
+Use only for:
+- Symbolic math
+- Exact ratio modeling
