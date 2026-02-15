@@ -45,3 +45,24 @@ Python integers:
 Unlike C:
 - No 32-bit or 64-bit overflow
 - No wraparound
+
+## CPython Internal Implementation
+
+Defined in:
+```bash
+Include/longobject.h
+Objects/longobject.c
+```
+
+Internal Structure
+```c
+typedef struct {
+    PyObject_VAR_HEAD
+    digit ob_digit[1];
+} PyLongObject;
+```
+
+Where:
+- PyObject_VAR_HEAD → reference count + type pointer + size
+- ob_size → number of digits (signed)
+- ob_digit[] → array of digits
