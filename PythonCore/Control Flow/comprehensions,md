@@ -1,0 +1,207 @@
+# PythonCore → Control Flow → Comprehensions
+
+# 1) Conceptual Model
+
+Comprehensions are **syntax for building collections** from iterables
+with optional filters and transforms.
+
+Types:
+
+-   List comprehension: `[expr for x in it if cond]`
+-   Set comprehension: `{expr for x in it if cond]`
+-   Dict comprehension: `{k: v for x in it if cond}`
+
+Key property: - They are expressions, not statements - They run eagerly
+(materialize the result) except generator expressions
+
+------------------------------------------------------------------------
+
+# 2) Evaluation Order (Very Important)
+
+Example:
+
+``` python
+[x*y for x in xs for y in ys if y > 0]
+```
+
+Equivalent to nested loops:
+
+``` python
+out = []
+for x in xs:
+    for y in ys:
+        if y > 0:
+            out.append(x*y)
+```
+
+Order is left-to-right: - outer `for` clauses first - `if` filters apply
+to the closest preceding `for` binding context
+
+Pitfall: misreading nesting order is common in reviews.
+
+------------------------------------------------------------------------
+
+# 3) Scope Semantics (Python 3 Change)
+
+In Python 2, the loop variable leaked into outer scope. In Python 3,
+comprehensions have their own **implicit scope** (like a hidden
+function).
+
+``` python
+x = 10
+lst = [x for x in range(3)]
+x  # still 10 in Python 3
+```
+
+But note: - the expression inside can still reference outer variables -
+assignments bind inside the comprehension scope
+
+------------------------------------------------------------------------
+
+# 4) CPython Compilation Model
+
+CPython compiles comprehensions into: - a hidden code object - executed
+like a specialized function - for list/set/dict comprehensions: uses
+specialized build/append opcodes
+
+### Why it's fast
+
+List comprehension is often faster than equivalent explicit loop
+because: - `LIST_APPEND` is a specialized opcode - fewer attribute
+lookups (`append` isn't looked up each time) - the loop body is tight
+and optimized
+
+Set/dict comprehensions similarly use specialized opcodes (`SET_ADD`,
+`MAP_ADD`).
+
+------------------------------------------------------------------------
+
+# 5) Comprehensions vs Generator Expressions
+
+List comprehension: - eager - materializes list - can be memory heavy
+
+Generator expression: - lazy iterator - streams values - often better
+for pipelines
+
+Example:
+
+``` python
+sum(x*x for x in xs)  # generator expression, avoids list allocation
+```
+
+Use generator expressions when the consumer can stream (sum, any, all,
+max, min, etc.).
+
+------------------------------------------------------------------------
+
+# 6) Edge Cases & Pitfalls
+
+## 6.1 Nested comprehensions become unreadable quickly
+
+Prefer explicit loops if logic becomes complex or has side effects.
+
+## 6.2 Side effects inside comprehensions are a code smell
+
+Example bad:
+
+``` python
+[log(x) for x in xs]  # using list just for side effects
+```
+
+Use a loop explicitly.
+
+## 6.3 Late binding issues still exist with lambdas
+
+Even though `x` doesn't leak, closures capture variables by reference:
+
+``` python
+funcs = [lambda: i for i in range(3)]
+[f() for f in funcs]  # [2,2,2]
+```
+
+Fix via default arg:
+
+``` python
+funcs = [lambda i=i: i for i in range(3)]
+```
+
+## 6.4 Dict comprehension overwrites keys
+
+Later keys overwrite earlier keys silently:
+
+``` python
+{k: v for k, v in pairs}  # duplicates keep last
+```
+
+This is sometimes desired, sometimes a bug.
+
+------------------------------------------------------------------------
+
+# 7) Performance Considerations
+
+-   List comprehensions are typically faster than `for` + `append`
+-   Generator expressions avoid allocation but can be slower per-item in
+    some cases due to iterator protocol overhead
+-   Use `itertools` when you need advanced lazy composition
+
+Rule of thumb for backend workloads: - If you need the whole list anyway
+→ list comprehension is good - If you stream into an aggregator (`sum`,
+`any`, `all`) → generator expression is better - If you do IO/DB in body
+→ explicit loop for clarity and error handling
+
+------------------------------------------------------------------------
+
+# 8) Production Patterns
+
+## 8.1 Filtering and projection
+
+Common in API shaping:
+
+``` python
+public_users = [
+    {"id": u.id, "name": u.name}
+    for u in users
+    if u.active
+]
+```
+
+## 8.2 Normalization
+
+``` python
+emails = [e.strip().lower() for e in raw_emails if e]
+```
+
+## 8.3 Fast membership sets
+
+``` python
+allowed = {x.id for x in rows}
+```
+
+## 8.4 Dict indexing
+
+``` python
+by_id = {u.id: u for u in users}
+```
+
+------------------------------------------------------------------------
+
+# 9) Interview Traps
+
+1)  Comprehension loop variable does not leak in Python 3
+2)  Evaluation order matches nested loops left-to-right
+3)  List comprehension is eager; generator expression is lazy
+4)  Side effects in comprehensions are a smell
+5)  Closure late-binding with lambdas still applies
+
+------------------------------------------------------------------------
+
+# 10) Summary
+
+-   Comprehensions are compiled, optimized collection builders
+-   They have their own scope in Python 3
+-   List/set/dict comprehensions use specialized opcodes → often faster
+    than manual loops
+-   Use generator expressions to avoid allocation when possible
+-   Prefer explicit loops for complex logic and side effects
+
+------------------------------------------------------------------------
