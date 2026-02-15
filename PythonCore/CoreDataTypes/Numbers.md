@@ -124,3 +124,31 @@ Runtime Behavior
 - Every arithmetic operation creates a new PyLongObject.
 - Integers are immutable.
 - Large integers allocate memory dynamically.
+
+## Edge Cases
+### Bitwise on Negative Integers
+
+Python simulates infinite two’s complement.
+```python
+~(-1)  # 0
+```
+Internally:
+- Stored as sign + magnitude
+- But operations mimic infinite sign extension
+
+### Floor Division Behavior
+```python
+5 // -2  # -3
+```
+Python uses mathematical floor, not truncation.
+C would return -2.
+
+## Performance Considerations
+- Big integers scale with digit count
+- Heavy integer loops are slow in pure Python
+- Each operation:
+ - Allocates memory
+ - Performs dynamic dispatch
+ - Updates refcount
+Engineering implication:
+- For heavy numeric workloads → use NumPy or C extensions.
