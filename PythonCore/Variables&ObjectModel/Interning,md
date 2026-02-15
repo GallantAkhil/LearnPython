@@ -1,0 +1,54 @@
+# PythonCore → Variables & Object Model → Interning (Small Ints & Strings)
+
+**Systems-Level Deep Dive (object reuse + memory optimization +
+pitfalls)**
+
+------------------------------------------------------------------------
+
+## 1) Small Integer Caching
+
+CPython pre-allocates integers typically in range \[-5, 256\].
+
+``` python
+a = 100
+b = 100
+a is b  # True (usually)
+```
+
+But:
+
+``` python
+a = 1000
+b = 1000
+a is b  # Not guaranteed
+```
+
+------------------------------------------------------------------------
+
+## 2) String Interning
+
+Certain strings are interned: - identifiers - some literals -
+compile-time constants
+
+Manual interning:
+
+``` python
+import sys
+sys.intern(s)
+```
+
+------------------------------------------------------------------------
+
+## 3) Why Interning Exists
+
+-   reduce memory usage
+-   speed up dict key comparisons (pointer compare)
+
+------------------------------------------------------------------------
+
+## 4) Pitfalls
+
+Do not rely on `is` for value equality. Interning behavior may vary
+across versions and contexts.
+
+------------------------------------------------------------------------
