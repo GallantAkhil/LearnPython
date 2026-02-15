@@ -148,9 +148,9 @@ C would return -2.
 - Big integers scale with digit count
 - Heavy integer loops are slow in pure Python
 - Each operation:
- - Allocates memory
- - Performs dynamic dispatch
- - Updates refcount
+-- Allocates memory
+-- Performs dynamic dispatch
+-- Updates refcount
 Engineering implication:
 - For heavy numeric workloads → use NumPy or C extensions.
 
@@ -345,5 +345,6 @@ Every number:
 - Has reference count
 - Has type pointer
 - Uses dynamic dispatch
+
 Python does NOT use unboxed primitives.
 This is the core reason numeric loops are slow.
