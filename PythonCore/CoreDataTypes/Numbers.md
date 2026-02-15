@@ -294,3 +294,56 @@ GCD computation is expensive.
 Use only for:
 - Symbolic math
 - Exact ratio modeling
+
+# 6️⃣ complex
+
+## Internal Structure
+```c
+typedef struct {
+    PyObject_HEAD
+    Py_complex cval;
+} PyComplexObject;
+```
+Where:
+```c
+typedef struct {
+    double real;
+    double imag;
+} Py_complex;
+```
+Two double values.
+Memory ≈ 32 bytes.
+
+## Behavior
+```python
+1+2j > 3+4j  # TypeError
+```
+Complex numbers are not ordered.
+
+# 7️⃣ Cross-Type Promotion Rules
+| Expression	| Result Type |
+|------------|-------------|
+| int + float	| float |
+| int + complex	| complex |
+| float + complex	| complex |
+| int + Decimal	| TypeError |
+| float + Decimal	| TypeError |
+
+Decimal is isolated to prevent silent precision bugs.
+
+# 8️⃣ Memory Model Summary (64-bit CPython Approximate)
+| Type	| Memory |
+|------|--------|
+| int (small)	| ~28 bytes |
+| float	| ~24 bytes |
+| complex	| ~32 bytes |
+| Decimal	| ~100+ bytes |
+| Fraction	| ~100+ bytes |
+
+Every number:
+- Heap allocated
+- Has reference count
+- Has type pointer
+- Uses dynamic dispatch
+Python does NOT use unboxed primitives.
+This is the core reason numeric loops are slow.
