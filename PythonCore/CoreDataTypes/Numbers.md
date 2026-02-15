@@ -150,7 +150,7 @@ C would return -2.
 - Each operation:
   - Allocates memory
   - Performs dynamic dispatch
--- Updates refcount
+  - Updates refcount
 Engineering implication:
 - For heavy numeric workloads → use NumPy or C extensions.
 
