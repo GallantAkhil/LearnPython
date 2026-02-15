@@ -2,8 +2,6 @@
 
 Python’s numeric system is not just a few types. It is a carefully engineered hierarchy with different runtime representations, memory layouts, and arithmetic algorithms.
 
---
-
 # 1️⃣ Conceptual Model
 
 ### Python numeric tower
