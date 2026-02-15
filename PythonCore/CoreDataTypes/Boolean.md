@@ -461,21 +461,3 @@ performance feature for streams/generators.
     `or` defaults
 -   Performance: the cost is usually dispatch/calls, not "branch
     prediction"
-
-------------------------------------------------------------------------
-
-## Recommended Next Deep Dives
-
-If you want to go even more systems-level:
-
-1)  Disassemble boolean-heavy code paths with `dis` and map to
-    interpreter behavior
-2)  Investigate `PyObject_IsTrue` and the object protocol hooks
-    (`tp_as_number`, `sq_length`)
-3)  Analyze boolean-heavy hot loops and optimize with local bindings /
-    hoisting
-4)  Study how `any()` and `all()` short-circuit iterators
-
-------------------------------------------------------------------------
-
-**End of document.**
