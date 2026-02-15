@@ -153,3 +153,110 @@ C would return -2.
  - Updates refcount
 Engineering implication:
 - For heavy numeric workloads → use NumPy or C extensions.
+
+# 3️⃣ float — IEEE-754 Double Precision
+## Conceptual Model
+Python float = C double (64-bit IEEE 754).
+
+Structure:
+| Field |	Bits |
+|-------|------|
+| Sign	| 1 |
+| Exponent	| 11 |
+| Mantissa	| 52 |
+
+## CPython Structure
+
+Defined in:
+```bash
+Include/floatobject.h
+Objects/floatobject.c
+```
+```c
+typedef struct {
+    PyObject_HEAD
+    double ob_fval;
+} PyFloatObject;
+```
+
+Memory footprint (64-bit):
+- ~24 bytes per float
+Massive overhead compared to C.
+
+## Precision Reality
+```python
+0.1 + 0.2 != 0.3
+```
+
+Because:
+- 0.1 is not exactly representable in binary
+- Mantissa is 52 bits (~15 decimal digits precision)
+
+## Edge Cases
+###NaN
+```python
+float('nan') == float('nan')  # False
+```
+
+IEEE rule:
+- NaN != NaN
+Danger in:
+- Sets
+- Dict keys
+- Equality comparisons
+
+### Signed Zero
+```python
+0.0 == -0.0  # True
+```
+But:
+```python
+import math
+math.copysign(1, -0.0)  # -1.0
+```
+Sign bit preserved internally.
+
+Performance
+- Fast (delegated to CPU FPU)
+- No arbitrary precision
+- Ideal for ML / scientific computing
+
+# 4️⃣ decimal.Decimal
+## Conceptual Model
+Base-10 floating point with arbitrary precision.
+Representation:
+```ini
+value = sign × coefficient × 10^exponent
+```
+Backed by:
+- libmpdec (C library)
+
+## Internal Behavior
+Decimal arithmetic is governed by a context:
+```python
+from decimal import getcontext
+getcontext().prec = 50
+```
+
+Context controls:
+- Precision
+- Rounding
+- Traps
+- Overflow rules
+Context is thread-local.
+
+## Edge Cases
+- Mixing with float → TypeError
+- Decimal(0.1) imports float error
+- Always use:
+```python
+Decimal("0.1")
+```
+
+## Performance
+- Much slower than float
+- Large memory footprint (~100+ bytes per instance)
+
+Use only for:
+- Finance
+- Monetary calculations
